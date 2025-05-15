@@ -1,0 +1,25 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header {
+  @apply bg-amber-100 shadow-md;
+}
+
+.hero {
+  @apply py-20 text-center;
+}
+
+.features {
+  @apply py-16 bg-amber-100;
+}
+
+.featureCard {
+  @apply bg-white p-6 rounded-lg shadow-md;
+}
+
+.footer {
+  @apply bg-amber-200 py-8 mt-12 text-center;
+}
