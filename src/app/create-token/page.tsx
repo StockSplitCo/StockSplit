@@ -35,9 +35,30 @@ export default function CreateTokenPage() {
         imageUri = await uploadToIPFS(image);
       }
 
+      // Create metadata JSON
+      const metadataJson = {
+        name,
+        symbol,
+        description: `${name} token`,
+        image: imageUri,
+        attributes: []
+      };
+
+      // Create metadata file
+      const metadataBlob = new Blob([JSON.stringify(metadataJson)], { type: 'application/json' });
+      const metadataFile = new File([metadataBlob], 'metadata.json', { type: 'application/json' });
+
+      // Upload metadata to IPFS
+      const metadataUri = await uploadToIPFS(metadataFile);
+
       const tokenAddress = await createToken(
         decimals, 
-        supply,     
+        supply,
+        {
+          name,
+          symbol,
+          uri: metadataUri
+        }
       );
 
       setSuccess({

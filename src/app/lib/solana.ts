@@ -4,6 +4,7 @@ import {
     Keypair,
     SystemProgram,
     Transaction,
+    PublicKey,
   } from '@solana/web3.js';
   import {
     TOKEN_PROGRAM_ID,
@@ -14,8 +15,22 @@ import {
     getAssociatedTokenAddress,
     createMintToInstruction,
   } from '@solana/spl-token';
+  import {
+    PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
+    createCreateMetadataAccountV3Instruction,
+  } from '@metaplex-foundation/mpl-token-metadata';
+
+  interface TokenMetadata {
+    name: string;
+    symbol: string;
+    uri: string;
+  }
   
-  export default async function createToken(decimals: number, amount: number): Promise<string> {
+  export default async function createToken(
+    decimals: number, 
+    amount: number,
+    metadata: TokenMetadata
+  ): Promise<string> {
     const provider = (window as any).solana;
     if (!provider?.isPhantom) {
       throw new Error('Phantom wallet not found');
@@ -49,7 +64,7 @@ import {
     );
   
     const ata = await getAssociatedTokenAddress(
-      mintPubkey,
+      mintKeypair.publicKey,
       wallet,
       false,
       TOKEN_PROGRAM_ID,
@@ -64,6 +79,43 @@ import {
         mintPubkey  
       )
     );
+
+    
+    const [metadataAddress] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('metadata'),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mintPubkey.toBuffer(),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    );
+
+    const metadataInstruction = createCreateMetadataAccountV3Instruction(
+      {
+        metadata: metadataAddress,
+        mint: mintPubkey,
+        mintAuthority: wallet,
+        payer: wallet,
+        updateAuthority: wallet,
+      },
+      {
+        createMetadataAccountArgsV3: {
+          data: {
+            name: metadata.name,
+            symbol: metadata.symbol,
+            uri: metadata.uri,
+            sellerFeeBasisPoints: 0,
+            creators: null,
+            collection: null,
+            uses: null,
+          },
+          isMutable: true,
+          collectionDetails: null,
+        },
+      }
+    );
+
+    tx.add(metadataInstruction);
   
     tx.feePayer = wallet;
     tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;

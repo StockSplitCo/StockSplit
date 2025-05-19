@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY || '';
-const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY || '';
+const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY || '';
 
 export async function uploadToIPFS(file: File): Promise<string> {
   const formData = new FormData();
@@ -21,7 +21,7 @@ export async function uploadToIPFS(file: File): Promise<string> {
       }
     );
 
-    return `ipfs://${response.data.IpfsHash}`;
+    return `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
   } catch (error) {
     console.error('Error uploading to IPFS:', error);
     throw new Error('Failed to upload image to IPFS');
