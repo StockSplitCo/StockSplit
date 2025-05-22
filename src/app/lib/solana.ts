@@ -19,6 +19,7 @@ import {
     PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
     createCreateMetadataAccountV3Instruction,
   } from '@metaplex-foundation/mpl-token-metadata';
+  import { supabase } from './supabase';
 
   interface TokenMetadata {
     name: string;
@@ -141,6 +142,22 @@ import {
       await connection.confirmTransaction(mintTxId, 'confirmed');
       
       console.log('Tokens minted! Tx ID:', mintTxId);
+
+      
+      const { error } = await supabase
+        .from('tokens')
+        .insert([
+          {
+            token_address: mintPubkey.toBase58(),
+            token_name: metadata.name,
+            token_symbol: metadata.symbol,
+            creator_address: wallet.toBase58(),
+          },
+        ]);
+
+      if (error) {
+        console.error('Error storing token data:', error);
+      }
       
     return mintPubkey.toBase58();
   }
