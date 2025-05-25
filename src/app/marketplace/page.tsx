@@ -1,7 +1,5 @@
 "use client"
 import Link from 'next/link';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-
 
 const startups = [
     {
@@ -32,42 +30,33 @@ const startups = [
 
 export default function Marketplace() {
     return (
-        <div className="min-h-screen bg-amber-50 colour-50"> 
-            <header className="bg-amber-100 shadow-md">
-                <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-                    <Link href="/" className="text-2xl font-bold text-amber-800">StockSplit</Link>
-                    <WalletMultiButton />
-                </div>
-            </header>
+        <div className="container mx-auto px-4 py-12">
+            <h1 className="text-3xl font-bold text-amber-900 mb-8">Startup Marketplace</h1>
 
-            <main className="container mx-auto px-4 py-12">
-                <h1 className="text-3xl font-bold text-amber-900 mb-8">Startup Marketplace</h1>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {startups.map(startup => (
-                        <div key={startup.id} className="card bg-white shadow-md rounded-lg p-6"> 
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">{startup.name}</h2> 
-                            <p className="text-gray-700 mb-4">{startup.description}</p> 
-                            <div className="space-y-2 mb-4">
-                                <p><span className="font-semibold text-gray-800">Price:</span> {startup.price}</p>
-                                <p><span className="font-semibold text-gray-800">Raised:</span> {startup.raised}</p> 
-                            </div>
-                            <Link
-                                href={`/tokens/${startup.tokenAddress}`}
-                                className="btn-primary inline-block w-full text-center bg-amber-500 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded" 
-                            >
-                                View Details
-                            </Link>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {startups.map(startup => (
+                    <div key={startup.id} className="bg-white shadow-md rounded-lg p-6 border border-amber-100"> 
+                        <h2 className="text-xl font-bold text-amber-800 mb-2">{startup.name}</h2> 
+                        <p className="text-amber-700 mb-4">{startup.description}</p> 
+                        <div className="space-y-2 mb-4">
+                            <p><span className="font-semibold text-amber-800 ">Price:</span> {startup.price}</p>
+                            <p><span className="font-semibold text-amber-800">Raised:</span> {startup.raised}</p> 
                         </div>
-                    ))}
-                </div>
+                        <Link
+                            href={`/tokens/${startup.tokenAddress}`}
+                            className="inline-block w-full text-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded transition" 
+                        >
+                            View Details
+                        </Link>
+                    </div>
+                ))}
+            </div>
 
-                <div className="mt-12 text-center">
-                    <Link href="/create-token" className="btn-secondary px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold rounded"> {/* Додав стилі для кнопки */}
-                        List Your Startup
-                    </Link>
-                </div>
-            </main>
+            <div className="mt-12 text-center">
+                <Link href="/create-token" className="bg-white text-amber-700 px-6 py-3 rounded-lg border border-amber-600 hover:bg-amber-50 transition">
+                    List Your Startup
+                </Link>
+            </div>
         </div>
     );
 }

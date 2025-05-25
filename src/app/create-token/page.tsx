@@ -34,8 +34,7 @@ export default function CreateTokenPage() {
       if (image) {
         imageUri = await uploadToIPFS(image);
       }
-
-      // Create metadata JSON
+     
       const metadataJson = {
         name,
         symbol,
@@ -44,11 +43,11 @@ export default function CreateTokenPage() {
         attributes: []
       };
 
-      // Create metadata file
+     
       const metadataBlob = new Blob([JSON.stringify(metadataJson)], { type: 'application/json' });
       const metadataFile = new File([metadataBlob], 'metadata.json', { type: 'application/json' });
 
-      // Upload metadata to IPFS
+     
       const metadataUri = await uploadToIPFS(metadataFile);
 
       const tokenAddress = await createToken(
@@ -83,7 +82,7 @@ export default function CreateTokenPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-12 text-gray-800">
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8 border border-amber-100">
           <h1 className="text-3xl font-bold text-amber-900 mb-8 text-center">Create Your Token</h1>
           
@@ -99,7 +98,7 @@ export default function CreateTokenPage() {
               <p>Name: {success.name}</p>
               <p>Symbol: {success.symbol}</p>
               <Link 
-                href={`/tokens/${success.address}`}
+                href={`/tokens`}
                 className="mt-3 inline-block btn-primary"
               >
                 View Token Page

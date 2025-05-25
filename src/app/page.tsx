@@ -7,9 +7,7 @@ export default function Home() {
     <div className="min-h-screen bg-amber-50">
      
       <header className="bg-amber-100 shadow-md">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-amber-800">StockSplit</h1>
-          <WalletMultiButton className="bg-amber-600 hover:bg-amber-700" />
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">              
         </div>
       </header>
 
