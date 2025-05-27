@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { supabase, TokenRecord } from '../lib/supabase';
+import { requestTokens, TokenRequest } from '../lib/tokenRequest';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { transferTokens } from '../lib/solana';
 
 export default function TokensPage() {
   const [tokens, setTokens] = useState<TokenRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [requesting, setRequesting] = useState<number | null>(null);
+  const { publicKey } = useWallet();
 
   useEffect(() => {
     async function fetchTokens() {
@@ -29,6 +34,41 @@ export default function TokensPage() {
 
     fetchTokens();
   }, []);
+
+  const handleRequestTokens = async (token: TokenRecord) => {
+    if (!publicKey) {
+      alert('Please connect your wallet first');
+      return;
+    }
+
+    setRequesting(Number(token.id));
+    try {
+    
+      const transferSuccess = await transferTokens(
+        token.token_address,
+        1, 
+        9  
+      );
+
+      if (transferSuccess) {
+        alert('Tokens transferred successfully!');
+        return;
+      }
+
+      
+      const result = await requestTokens(Number(token.id), publicKey.toString());
+      if (result) {
+        alert('Token request submitted successfully!');
+      } else {
+        alert('Failed to submit token request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error requesting tokens:', error);
+      alert('An error occurred while requesting tokens.');
+    } finally {
+      setRequesting(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -62,6 +102,17 @@ export default function TokensPage() {
                 <p className="text-sm text-amber-600 mt-2">
                   Created: {new Date(token.created_at).toLocaleDateString()}
                 </p>
+                <button
+                  onClick={() => handleRequestTokens(token)}
+                  disabled={requesting === Number(token.id)}
+                  className={`mt-4 px-4 py-2 rounded-md text-white font-medium ${
+                    requesting === Number(token.id)
+                      ? 'bg-amber-400 cursor-not-allowed'
+                      : 'bg-amber-600 hover:bg-amber-700'
+                  }`}
+                >
+                  {requesting === Number(token.id) ? 'Requesting...' : 'Request Tokens'}
+                </button>
               </div>
             </div>
           </div>
