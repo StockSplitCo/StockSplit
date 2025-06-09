@@ -32,9 +32,9 @@ export default function TokenCreationForm({ onSubmit, isLoading }: TokenCreation
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-6 p-4 md:p-6 bg-white rounded-lg shadow-md">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="name" className="block text-sm font-medium text-amber-800">
           Token Name
         </label>
         <input
@@ -43,12 +43,13 @@ export default function TokenCreationForm({ onSubmit, isLoading }: TokenCreation
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+          className="mt-1 block w-full border border-amber-200 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-amber-500 focus:border-amber-500 text-gray-700"
+          placeholder="Enter token name"
         />
       </div>
 
       <div>
-        <label htmlFor="symbol" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="symbol" className="block text-sm font-medium text-amber-800">
           Token Symbol
         </label>
         <input
@@ -58,12 +59,13 @@ export default function TokenCreationForm({ onSubmit, isLoading }: TokenCreation
           maxLength={5}
           value={symbol}
           onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+          className="mt-1 block w-full border border-amber-200 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-amber-500 focus:border-amber-500 text-gray-700"
+          placeholder="e.g., TOKEN"
         />
       </div>
 
       <div>
-        <label htmlFor="supply" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="supply" className="block text-sm font-medium text-amber-800">
           Total Supply
         </label>
         <input
@@ -73,14 +75,15 @@ export default function TokenCreationForm({ onSubmit, isLoading }: TokenCreation
           required
           value={supply}
           onChange={(e) => setSupply(Number(e.target.value))}
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+          className="mt-1 block w-full border border-amber-200 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-amber-500 focus:border-amber-500 text-gray-700"
+          placeholder="Enter total supply"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Token Image (Optional)</label>
+        <label className="block text-sm font-medium text-amber-800">Token Image (Optional)</label>
         <div className="mt-1 flex items-center">
-          <label className="inline-block cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+          <label className="inline-block cursor-pointer bg-white py-2 px-3 border border-amber-200 rounded-md shadow-sm text-sm font-medium text-amber-700 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors">
             {preview ? 'Change Image' : 'Upload Image'}
             <input type="file" className="sr-only" onChange={handleImageChange} accept="image/*" />
           </label>
@@ -89,7 +92,7 @@ export default function TokenCreationForm({ onSubmit, isLoading }: TokenCreation
 
       {preview && (
         <div className="flex justify-center">
-          <div className="w-32 h-32 relative rounded-full overflow-hidden border-2 border-gray-200">
+          <div className="w-24 h-24 md:w-32 md:h-32 relative rounded-full overflow-hidden border-2 border-amber-200">
             <Image
               src={preview}
               alt="Token preview"
@@ -104,7 +107,11 @@ export default function TokenCreationForm({ onSubmit, isLoading }: TokenCreation
         <button
           type="submit"
           disabled={isLoading}
-          className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${isLoading ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
+          className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+            isLoading 
+              ? 'bg-amber-400 cursor-not-allowed' 
+              : 'bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500'
+          } transition-colors`}
         >
           {isLoading ? 'Creating Token...' : 'Create Token'}
         </button>

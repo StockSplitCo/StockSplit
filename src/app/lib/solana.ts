@@ -14,6 +14,8 @@ import {
     createAssociatedTokenAccountInstruction,
     getAssociatedTokenAddress,
     createMintToInstruction,
+    createTransferInstruction,
+    getAccount,
   } from '@solana/spl-token';
   import {
     PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
@@ -161,3 +163,84 @@ import {
       
     return mintPubkey.toBase58();
   }
+
+export async function transferTokens(
+  tokenAddress: string,
+  amount: number,
+  decimals: number
+): Promise<boolean> {
+  const provider = (window as any).solana;
+  if (!provider?.isPhantom) {
+    throw new Error('Phantom wallet not found');
+  }
+
+  await provider.connect();
+  const wallet = provider.publicKey;
+  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+
+  try {
+    
+    const mintPubkey = new PublicKey(tokenAddress);
+    
+    
+    const creatorAta = await getAssociatedTokenAddress(
+      mintPubkey,
+      wallet,
+      false,
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    );
+
+    
+    const requesterAta = await getAssociatedTokenAddress(
+      mintPubkey,
+      wallet,
+      false,
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    );
+
+    
+    try {
+      await getAccount(connection, requesterAta);
+    } catch {
+      
+      const createAtaIx = createAssociatedTokenAccountInstruction(
+        wallet,
+        requesterAta,
+        wallet,
+        mintPubkey
+      );
+
+      const createAtaTx = new Transaction().add(createAtaIx);
+      createAtaTx.feePayer = wallet;
+      createAtaTx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+      const signedCreateAtaTx = await provider.signTransaction(createAtaTx);
+      const createAtaTxId = await connection.sendRawTransaction(signedCreateAtaTx.serialize());
+      await connection.confirmTransaction(createAtaTxId, 'confirmed');
+    }
+
+    
+    const transferIx = createTransferInstruction(
+      creatorAta,
+      requesterAta,
+      wallet,
+      amount * Math.pow(10, decimals)
+    );
+
+    const transferTx = new Transaction().add(transferIx);
+    transferTx.feePayer = wallet;
+    transferTx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+    const signedTransferTx = await provider.signTransaction(transferTx);
+    const transferTxId = await connection.sendRawTransaction(signedTransferTx.serialize());
+    await connection.confirmTransaction(transferTxId, 'confirmed');
+
+    console.log('Tokens transferred! Tx ID:', transferTxId);
+    return true;
+  } catch (error) {
+    console.error('Error transferring tokens:', error);
+    return false;
+  }
+}
