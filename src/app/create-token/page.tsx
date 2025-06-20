@@ -1,7 +1,6 @@
 "use client"
 import { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import TokenCreationForm from '@/app/components/TokenCreationForm/TokenCreationForm';
 import createToken from '../lib/solana';
 import { uploadToIPFS } from '@/app/lib/ipfs';

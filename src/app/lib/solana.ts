@@ -34,7 +34,7 @@ import {
     amount: number,
     metadata: TokenMetadata
   ): Promise<string> {
-    const provider = (window as any).solana;
+    const provider = window.solana;
     if (!provider?.isPhantom) {
       throw new Error('Phantom wallet not found');
     }
@@ -169,7 +169,7 @@ export async function transferTokens(
   amount: number,
   decimals: number
 ): Promise<boolean> {
-  const provider = (window as any).solana;
+  const provider = window.solana;
   if (!provider?.isPhantom) {
     throw new Error('Phantom wallet not found');
   }

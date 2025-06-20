@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase, TokenRecord } from '../lib/supabase';
-import { requestTokens, TokenRequest } from '../lib/tokenRequest';
+import { requestTokens } from '../lib/tokenRequest';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { transferTokens } from '../lib/solana';
 
