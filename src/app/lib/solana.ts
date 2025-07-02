@@ -164,10 +164,11 @@ import {
     return mintPubkey.toBase58();
   }
 
-export async function transferTokens(
+  export async function transferTokens(
   tokenAddress: string,
   amount: number,
-  decimals: number
+  decimals: number,
+  recipientAddress: PublicKey 
 ): Promise<boolean> {
   const provider = window.solana;
   if (!provider?.isPhantom) {
@@ -175,45 +176,43 @@ export async function transferTokens(
   }
 
   await provider.connect();
-  const wallet = provider.publicKey;
+  const senderWallet = provider.publicKey;
   const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 
   try {
-    
     const mintPubkey = new PublicKey(tokenAddress);
     
     
-    const creatorAta = await getAssociatedTokenAddress(
+    const senderAta = await getAssociatedTokenAddress(
       mintPubkey,
-      wallet,
+      senderWallet,
+      false,
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    );
+    console.log(senderAta)
+    
+    const recipientAta = await getAssociatedTokenAddress(
+      mintPubkey,
+      recipientAddress, 
       false,
       TOKEN_PROGRAM_ID,
       ASSOCIATED_TOKEN_PROGRAM_ID
     );
 
-    
-    const requesterAta = await getAssociatedTokenAddress(
-      mintPubkey,
-      wallet,
-      false,
-      TOKEN_PROGRAM_ID,
-      ASSOCIATED_TOKEN_PROGRAM_ID
-    );
-
-    
+    console.log(recipientAta)
     try {
-      await getAccount(connection, requesterAta);
+      await getAccount(connection, recipientAta);
     } catch {
-      
       const createAtaIx = createAssociatedTokenAccountInstruction(
-        wallet,
-        requesterAta,
-        wallet,
+        senderWallet, 
+        recipientAta,
+        recipientAddress, 
         mintPubkey
       );
 
       const createAtaTx = new Transaction().add(createAtaIx);
-      createAtaTx.feePayer = wallet;
+      createAtaTx.feePayer = senderWallet;
       createAtaTx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
       const signedCreateAtaTx = await provider.signTransaction(createAtaTx);
@@ -223,14 +222,14 @@ export async function transferTokens(
 
     
     const transferIx = createTransferInstruction(
-      creatorAta,
-      requesterAta,
-      wallet,
+      senderAta,
+      recipientAta,
+      senderWallet, 
       amount * Math.pow(10, decimals)
     );
 
     const transferTx = new Transaction().add(transferIx);
-    transferTx.feePayer = wallet;
+    transferTx.feePayer = senderWallet;
     transferTx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
     const signedTransferTx = await provider.signTransaction(transferTx);

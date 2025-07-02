@@ -42,23 +42,20 @@ export default function TokensPage() {
     }
 
     setRequesting(Number(token.id));
-    try {
+    try {     
+
+
       const transferSuccess = await transferTokens(
         token.token_address,
-        1, 
-        9  
+        1,
+        9,
+        publicKey
       );
 
       if (transferSuccess) {
         alert('Tokens transferred successfully!');
-        return;
-      }
-
-      const result = await requestTokens(Number(token.id), publicKey.toString());
-      if (result) {
-        alert('Token request submitted successfully!');
       } else {
-        alert('Failed to submit token request. Please try again.');
+        alert('Failed to transfer tokens. Please try again.');
       }
     } catch (error) {
       console.error('Error requesting tokens:', error);
@@ -105,11 +102,10 @@ export default function TokensPage() {
                 <button
                   onClick={() => handleRequestTokens(token)}
                   disabled={requesting === Number(token.id)}
-                  className={`mt-4 w-full md:w-auto px-4 py-2 rounded-md text-white font-medium text-sm md:text-base transition-colors ${
-                    requesting === Number(token.id)
+                  className={`mt-4 w-full md:w-auto px-4 py-2 rounded-md text-white font-medium text-sm md:text-base transition-colors ${requesting === Number(token.id)
                       ? 'bg-amber-400 cursor-not-allowed'
                       : 'bg-amber-600 hover:bg-amber-700'
-                  }`}
+                    }`}
                 >
                   {requesting === Number(token.id) ? 'Requesting...' : 'Request Tokens'}
                 </button>
